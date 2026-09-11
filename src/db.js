@@ -2,7 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const { DatabaseSync } = require("node:sqlite");
 
-const dbPath = process.env.DATABASE_PATH || path.join(__dirname, "..", "data", "bluetag.db");
+const isVercelRuntime = Boolean(process.env.VERCEL || process.env.VERCEL_ENV);
+const dbPath = isVercelRuntime
+  ? path.join("/tmp", "bluetag.db")
+  : process.env.DATABASE_PATH || path.join(__dirname, "..", "data", "bluetag.db");
 fs.mkdirSync(path.dirname(dbPath), { recursive: true });
 
 const db = new DatabaseSync(dbPath);

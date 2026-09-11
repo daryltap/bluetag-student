@@ -37,6 +37,10 @@ docker compose up --build
 
 The app listens on port 3000. Item data lives in the `bluetag-data` volume.
 
+## Deploying to Vercel
+
+Vercel functions cannot write to the project directory. When `VERCEL` is set, the app uses `/tmp/bluetag.db` so it can start, but that storage is temporary and local to a function instance. Users and posts can disappear after a cold start or deployment. Use a hosted database for persistent production data.
+
 ## Demo accounts
 
 | Email | Password | Notes |
