@@ -13,6 +13,8 @@ const CATEGORIES = [
 ];
 
 function searchItems({ q, category, kind }) {
+  //This part was fixed to add a params array to prevent SQL injection and to allow for parameterized queries
+  const params = [];
   let sql = `
     SELECT
       items.id,
@@ -32,19 +34,22 @@ function searchItems({ q, category, kind }) {
   `;
 
   if (q) {
-    sql += ` AND items.title || ' ' || items.description || ' ' || items.location LIKE '%${q}%'`;
+    sql += " AND items.title || ' ' || items.description || ' ' || items.location LIKE ?";
+    params.push(`%${q}%`);
   }
 
   if (category && category !== "all") {
-    sql += ` AND items.category = '${category}'`;
+    sql += " AND items.category = ?";
+    params.push(category);
   }
 
   if (kind && kind !== "all") {
-    sql += ` AND items.kind = '${kind}'`;
+    sql += " AND items.kind = ?";
+    params.push(kind);
   }
 
   sql += " ORDER BY items.created_at DESC LIMIT 50";
-  return db.prepare(sql).all();
+  return db.prepare(sql).all(...params);
 }
 
 router.get("/", (req, res) => {
